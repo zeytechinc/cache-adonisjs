@@ -1,0 +1,4 @@
+/**
+ * Cache configuration info
+ */
+export const healthCheckDateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'
