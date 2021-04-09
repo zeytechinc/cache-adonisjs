@@ -15,6 +15,11 @@ export default class CacheProvider {
       const { LRUCache } = require('../src/Cache/LRUCache')
       return LRUCache
     })
+
+    this.app.container.bind('Skrenek/Adonis/Cache/TLRUCache', () => {
+      const { TLRUCache } = require('../src/Cache/TLRUCache')
+      return TLRUCache
+    })
   }
 
   public boot() {
