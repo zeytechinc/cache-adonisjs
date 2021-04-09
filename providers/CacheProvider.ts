@@ -24,10 +24,9 @@ export default class CacheProvider {
 
   public boot() {
     this.app.container.withBindings(
-      ['Skrenek/Adonis/Cache/HealthCheckHelper'],
-      (HealthCheckHelper: HealthCheckHelperContract) => {
-        const Config = this.app.container.resolveBinding('Adonis/Core/Config')
-        const dateFormat = Config.get('cache.dateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
+      ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
+      (HealthCheckHelper: HealthCheckHelperContract, Config) => {
+        const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
         HealthCheckHelper.setDateFormat(dateFormat)
       }
     )

@@ -1,4 +1,13 @@
 /**
  * Cache configuration info
  */
+
+ /**
+  * Luxon date / time format to use
+  */
 export const healthCheckDateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'
+
+/**
+ *
+ */
+export const healthChecksEnabled = true
