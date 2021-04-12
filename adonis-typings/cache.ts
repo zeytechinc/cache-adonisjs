@@ -30,11 +30,11 @@ declare module 'Skrenek/Adonis/Cache' {
   }
 
   export interface LRUCacheContract<T> {
-    initialize(maxItems: number)
-    set(key: string, data: T | CacheItem<T>)
+    initialize(maxItems: number): void
+    set(key: string, data: T | CacheItem<T>): void
     get(key: string): T | undefined
     delete(key: string): boolean
-    clear()
+    clear(): void
     readonly maxSize: number
     readonly purged: number
     readonly lastCleared: string
@@ -42,10 +42,18 @@ declare module 'Skrenek/Adonis/Cache' {
     getHealthCheckMeta(includeItems?: boolean): object
   }
 
-  export interface TLRUCacheContract<T> extends LRUCacheContract<T> {
+  export interface TLRUCacheContract<T> {
     readonly maxAge: number
   }
 
-  export type LRUCache<T> = LRUCacheContract<T>
-  export type TLRUCache<T> = TLRUCacheContract<T>
+  export interface LRUCacheConstructorContract {
+    new <T>(maxItems: number): LRUCacheContract<T>
+  }
+
+  export interface TLRUCacheConstructorContract {
+    new <T>(maxItems: number, maxItemAge: number): TLRUCacheContract<T>
+  }
+
+  export const LRUCache: LRUCacheConstructorContract
+  export const TLRUCache: TLRUCacheConstructorContract
 }
