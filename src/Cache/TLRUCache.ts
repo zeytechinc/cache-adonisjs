@@ -1,5 +1,5 @@
 import { Duration } from 'luxon'
-import { TLRUCacheHealthCheck } from 'Skrenek/Adonis/Cache'
+import { TLRUCacheContract, TLRUCacheHealthCheck } from 'Skrenek/Adonis/Cache'
 import { CacheItem, LRUCache } from './LRUCache'
 
 /**
@@ -11,7 +11,7 @@ import { CacheItem, LRUCache } from './LRUCache'
  * Note that this implementation has NO mechanism for automatically pruning expired items.  They are simply pruned
  * on the first expired access attempt.
  */
-export class TLRUCache<T> extends LRUCache<T> {
+export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
   private maxItemAge: number
 
   /**
