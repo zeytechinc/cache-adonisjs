@@ -11,7 +11,7 @@
     "pretest": "npm run lint",
     "test": "node japaFile.js",
     "clean": "del build",
-    "compile": "npm run lint && npm run clean && tsc",
+    "compile": "npm run lint && npm run clean && tsc && npm run copyfiles",
     "build": "npm run compile",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
@@ -19,7 +19,8 @@
     "commit": "git-cz",
     "release": "np",
     "version": "npm run build",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json skrenek/cache-adonisjs"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json skrenek/cache-adonisjs",
+    "copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build"
   },
   "author": "Steve Krenek",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "@adonisjs/sink": "^5.1.2",
     "@types/node": "^14.14.37",
     "commitizen": "^4.2.3",
+    "copyfiles": "^2.4.1",
     "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^3.0.1",
     "doctoc": "^2.0.0",
