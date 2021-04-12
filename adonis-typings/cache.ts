@@ -47,11 +47,11 @@ declare module 'Skrenek/Adonis/Cache' {
   }
 
   export interface LRUCacheConstructorContract {
-    new <T>(maxItems: number): LRUCacheContract<T>
+    new <T>(maxItems?: number): LRUCacheContract<T>
   }
 
   export interface TLRUCacheConstructorContract {
-    new <T>(maxItems: number, maxItemAge: number): TLRUCacheContract<T>
+    new <T>(maxItems?: number, maxItemAge?: number): TLRUCacheContract<T>
   }
 
   export const LRUCache: LRUCacheConstructorContract
