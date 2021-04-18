@@ -1,6 +1,6 @@
 {
   "name": "@skrenek/cache-adonisjs",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Provides LRU and Timed LRU in-memory cache with support for Adonis",
   "types": "build/adonis-typings/index.d.ts",
   "main": "build/providers/CacheProvider.js",
@@ -66,7 +66,10 @@
     "anyBranch": false
   },
   "files": [
-    "build/**/*"
+    "build/adonis-typings",
+    "build/providers",
+    "build/src",
+    "build/templates"
   ],
   "adonisjs": {
     "instructions": "./build/instructions.js",
