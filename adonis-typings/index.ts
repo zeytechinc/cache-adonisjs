@@ -1,1 +1,1 @@
-/// <reference path="./cache.ts" />
+/// <reference path="./cache.d.ts" />
