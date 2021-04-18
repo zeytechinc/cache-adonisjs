@@ -42,7 +42,7 @@ declare module 'Skrenek/Adonis/Cache' {
     getHealthCheckMeta(includeItems?: boolean): object
   }
 
-  export interface TLRUCacheContract<T> {
+  export interface TLRUCacheContract<T> extends LRUCacheContract<T> {
     readonly maxAge: number
   }
 

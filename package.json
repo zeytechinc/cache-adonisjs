@@ -25,7 +25,7 @@
   },
   "author": "Steve Krenek",
   "license": "MIT",
-  "typings": "./build/adonis-typings/index.d.ts",
+  "typings": "build/adonis-typings/index.d.ts",
   "devDependencies": {
     "@adonisjs/core": "^5.1.4",
     "@adonisjs/mrm-preset": "^3.0.0",
