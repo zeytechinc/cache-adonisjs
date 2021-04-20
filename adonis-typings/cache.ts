@@ -46,11 +46,11 @@ declare module 'Skrenek/Adonis/Cache' {
     readonly maxAge: number
   }
 
-  export interface LRUCacheConstructorContract {
+  export type LRUCacheConstructorContract = {
     new <T>(maxItems?: number): LRUCacheContract<T>
   }
 
-  export interface TLRUCacheConstructorContract {
+  export type TLRUCacheConstructorContract = {
     new <T>(maxItems?: number, maxItemAge?: number): TLRUCacheContract<T>
   }
 
