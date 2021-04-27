@@ -1,5 +1,4 @@
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
-import { HealthCheckHelperContract } from 'Skrenek/Adonis/Cache'
 
 export default class CacheProvider {
   constructor(protected app: ApplicationContract) {}
@@ -30,25 +29,5 @@ export default class CacheProvider {
         TLRUCache: TLRUCache,
       }
     })
-  }
-
-  public boot() {
-    if (this.app.container.withBindings) {
-      this.app.container.withBindings(
-        ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
-        (HealthCheckHelper: HealthCheckHelperContract, Config) => {
-          const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
-          HealthCheckHelper.setDateFormat(dateFormat)
-        }
-      )
-    } else {
-      this.app.container.with(
-        ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
-        (HealthCheckHelper: HealthCheckHelperContract, Config) => {
-          const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
-          HealthCheckHelper.setDateFormat(dateFormat)
-        }
-      )
-    }
   }
 }
