@@ -33,12 +33,22 @@ export default class CacheProvider {
   }
 
   public boot() {
-    this.app.container.withBindings(
-      ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
-      (HealthCheckHelper: HealthCheckHelperContract, Config) => {
-        const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
-        HealthCheckHelper.setDateFormat(dateFormat)
-      }
-    )
+    if (this.app.container.withBindings) {
+      this.app.container.withBindings(
+        ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
+        (HealthCheckHelper: HealthCheckHelperContract, Config) => {
+          const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
+          HealthCheckHelper.setDateFormat(dateFormat)
+        }
+      )
+    } else {
+      this.app.container.with(
+        ['Skrenek/Adonis/Cache/HealthCheckHelper', '@ioc:Adonis/Core/Config'],
+        (HealthCheckHelper: HealthCheckHelperContract, Config) => {
+          const dateFormat = Config.get('cache.healthCheckDateFormat', 'yyyy-LL-dd HH:mm:ss ZZZZ')
+          HealthCheckHelper.setDateFormat(dateFormat)
+        }
+      )
+    }
   }
 }
