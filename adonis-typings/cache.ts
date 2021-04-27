@@ -1,8 +1,7 @@
 declare module 'Skrenek/Adonis/Cache' {
-  export interface HealthCheckHelperContract {
-    getAccessInfo(ms?: number): LastAccessInfo
-    formatDate(date: Date): string
-    setDateFormat(value: string)
+  export class HealthCheckHelperContract {
+    public static getAccessInfo(ms?: number): LastAccessInfo
+    public static formatDate(date: Date): string
   }
 
   export interface TLRUCacheHealthCheck {
