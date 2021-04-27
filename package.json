@@ -68,7 +68,8 @@
     "build/adonis-typings",
     "build/providers",
     "build/src",
-    "build/templates"
+    "build/templates",
+    "build/instructions.*"
   ],
   "adonisjs": {
     "instructions": "./build/instructions.js",

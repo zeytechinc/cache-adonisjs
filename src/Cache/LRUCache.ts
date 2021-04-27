@@ -104,7 +104,7 @@ export class LRUCache<T> {
     return `Size ${this.size} of ${this.maxItems}`
   }
 
-  public getHealthCheckMeta(includeItems?: boolean): object {
+  public getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): object {
     const meta: any = {
       size: this.size,
       maxSize: this.maxItems,
@@ -115,7 +115,7 @@ export class LRUCache<T> {
     if (includeItems) {
       const items: any = []
       for (const key of this.cacheKeyOrder) {
-        items.push(this.getItemHealthMetaData(key))
+        items.push(this.getItemHealthMetaData(key, dateFormat))
       }
       meta.items = items
     }
@@ -128,7 +128,7 @@ export class LRUCache<T> {
     if (key) {
       return {
         key: key,
-        dateCreated: new Date(), //HealthCheckHelper.formatDate(new Date(item!.timestamp)),
+        dateCreated: new Date(item!.timestamp),
         lastAccessed: HealthCheckHelper.getAccessInfo(item!.lastAccess, dateFormat),
       }
     }
