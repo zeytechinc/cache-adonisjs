@@ -1,4 +1,4 @@
-import { HealthCheckHelper } from 'Skrenek/Adonis/Cache'
+// import { HealthCheckHelper } from 'Skrenek/Adonis/Cache'
 
 export class CacheItem<T> {
   public data: T
@@ -124,12 +124,12 @@ export class LRUCache<T> {
   }
 
   protected getItemHealthMetaData(key: string) {
-    const item = this.cache.get(key)
+    // const item = this.cache.get(key)
     if (key) {
       return {
         key: key,
-        dateCreated: HealthCheckHelper.formatDate(new Date(item!.timestamp)),
-        lastAccessed: HealthCheckHelper.getAccessInfo(item!.lastAccess),
+        // dateCreated: HealthCheckHelper.formatDate(new Date(item!.timestamp)),
+        // lastAccessed: HealthCheckHelper.getAccessInfo(item!.lastAccess),
       }
     }
   }
