@@ -39,6 +39,7 @@ declare module 'Skrenek/Adonis/Cache' {
     readonly lastCleared: string
     getHealthCheckMessage(): string
     getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): object
+    getHealthChecker(displayName: string)
   }
 
   export interface TLRUCacheContract<T> extends LRUCacheContract<T> {

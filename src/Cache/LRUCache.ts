@@ -133,4 +133,17 @@ export class LRUCache<T> {
       }
     }
   }
+
+  public getHealthChecker(displayName: string) {
+    return () => {
+      return {
+        displayName: displayName,
+        health: {
+          healthy: this.size < this.maxSize,
+          message: this.getHealthCheckMessage(),
+        },
+        meta: this.getHealthCheckMeta(),
+      }
+    }
+  }
 }
