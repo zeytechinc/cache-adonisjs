@@ -1,3 +1,4 @@
+import { LRUCacheContract } from 'Skrenek/Adonis/Cache'
 import HealthCheckHelper from '../Helpers/HealthCheckHelper'
 
 export class CacheItem<T> {
@@ -17,7 +18,7 @@ export class CacheItem<T> {
  * it can be used outside of it, it provides health check mechanisms that can be used by the framework to inspect
  * the state of the cache at runtime.
  */
-export class LRUCache<T> {
+export class LRUCache<T> implements LRUCacheContract<T> {
   protected cache: Map<string, CacheItem<T>> = new Map()
   protected cacheKeyOrder: Set<string> = new Set()
   protected maxItems: number = 0
