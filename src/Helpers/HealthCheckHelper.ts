@@ -1,7 +1,7 @@
 import { DateTime, Duration } from 'luxon'
 import { HealthCheckHelperContract, LastAccessInfo } from 'Skrenek/Adonis/Cache'
 
-export default class HealthCheckHelper implements HealthCheckHelperContract {
+export class HealthCheckHelper implements HealthCheckHelperContract {
   public static formatDate(date: Date, dateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'): string {
     const dt = DateTime.fromJSDate(date)
     return `${dt.toFormat(dateFormat)}`

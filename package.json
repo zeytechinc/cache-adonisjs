@@ -69,7 +69,9 @@
     "build/providers",
     "build/src",
     "build/templates",
-    "build/instructions.*"
+    "build/instructions.*",
+    "build/standalone.js",
+    "build/standalone.d.ts"
   ],
   "adonisjs": {
     "instructions": "./build/instructions.js",

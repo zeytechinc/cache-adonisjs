@@ -1,5 +1,5 @@
 import { LRUCacheContract } from 'Skrenek/Adonis/Cache'
-import HealthCheckHelper from '../Helpers/HealthCheckHelper'
+import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
 
 export class CacheItem<T> {
   public data: T
