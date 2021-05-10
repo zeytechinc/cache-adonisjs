@@ -1,3 +1,4 @@
+import { Checker } from '@ioc:Adonis/Core/HealthCheck'
 import { LRUCacheContract } from 'Skrenek/Adonis/Cache'
 import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
 
@@ -135,8 +136,8 @@ export class LRUCache<T> implements LRUCacheContract<T> {
     }
   }
 
-  public getHealthChecker(displayName: string) {
-    return () => {
+  public getHealthChecker(displayName: string): Checker {
+    return async () => {
       return {
         displayName: displayName,
         health: {
