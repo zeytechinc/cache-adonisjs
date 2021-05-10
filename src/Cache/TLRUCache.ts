@@ -75,7 +75,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     for (const key of this.cacheKeyOrder) {
       let item = this.cache.get(key)!
       let age = now - item.timestamp
-      let ttl = this.maxItemAge - age
+      let ttl = this.maxItemAge !== 0 ? this.maxItemAge - age : Number.MAX_VALUE
       const accessInfo = this.getItemHealthMetaData(key)
       info.push({
         key: key,
