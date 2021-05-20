@@ -26,8 +26,8 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
   /**
    * Initializes (or re-initializes) the cache to the given size and max age.
    * Items are pruned until the max size is reached AND all expired items are gone.
-   * @param maxItems max items, 0 for infinite
-   * @param maxItemAge, max age in ms
+   * @param maxItems max items
+   * @param maxItemAge, max age in ms, 0 for infinite
    */
   public initialize(maxItems: number, maxItemAge: number = 0) {
     super.initialize(maxItems)
@@ -84,7 +84,10 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
           .as('minute')
           .toFixed(2)} min)`,
         ttl: ttl,
-        ttlDesc: `${ttl} ms (${Duration.fromMillis(ttl).as('minute').toFixed(2)} min)`,
+        ttlDesc:
+          this.maxItemAge > 0
+            ? `${ttl} ms (${Duration.fromMillis(ttl).as('minute').toFixed(2)} min)`
+            : 'Never expires',
         expired: now - item.timestamp > this.maxItemAge,
         lastAccess: accessInfo!.lastAccessed,
       })
