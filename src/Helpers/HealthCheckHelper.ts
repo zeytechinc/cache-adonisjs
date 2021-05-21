@@ -1,5 +1,6 @@
 import { DateTime, Duration } from 'luxon'
-import { HealthCheckHelperContract, LastAccessInfo } from 'Skrenek/Adonis/Cache'
+import { HealthCheckHelperContract } from '@ioc:Skrenek/Adonis/Cache/HealthCheckHelper'
+import { LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
 
 export class HealthCheckHelper implements HealthCheckHelperContract {
   public static formatDate(date: Date, dateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'): string {
@@ -10,7 +11,7 @@ export class HealthCheckHelper implements HealthCheckHelperContract {
   public static getAccessInfo(
     ms?: number,
     dateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'
-  ): LastAccessInfo {
+  ): LastAccessInfoContract {
     if (!ms) {
       return {
         utc: 'never',

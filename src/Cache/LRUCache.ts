@@ -1,18 +1,7 @@
 import { Checker } from '@ioc:Adonis/Core/HealthCheck'
-import { LRUCacheContract } from 'Skrenek/Adonis/Cache'
+import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
 import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
-
-export class CacheItem<T> {
-  public data: T
-  public timestamp: number
-  public lastAccess: number
-
-  constructor(data: T) {
-    this.data = data
-    this.timestamp = new Date().getTime()
-    this.lastAccess = this.timestamp
-  }
-}
+import CacheItem from './CacheItem'
 
 /**
  * This class implements a least recently used in-memory cache specifically tailored toward use in AdonisJS.  While
