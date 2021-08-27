@@ -4,7 +4,6 @@ import CacheItem from './CacheItem'
 export default class MemoryCacheEngine<T> implements CacheEngine<T> {
   protected cache: Map<string, CacheItem<T>> = new Map()
   protected cacheKeyOrder: Set<string> = new Set()
-  private maxItemAge: number = 0
 
   public async has(key: string): Promise<boolean> {
     return this.cache.has(key)
