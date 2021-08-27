@@ -1,7 +1,7 @@
 import { Duration } from 'luxon'
 import { TLRUCacheContract, TLRUCacheHealthCheck } from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
 import { LRUCache } from './LRUCache'
-import CacheItem from './CacheItem'
+import { CacheEngineTypes } from '@ioc:Skrenek/Adonis/Cache'
 
 /**
  * This implements a Timed Least Recently Used cache.  See https://en.wikipedia.org/wiki/Cache_replacement_policies#Time_aware_least_recently_used_(TLRU)
@@ -19,8 +19,14 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
    * @param maxItems max number of cached items, 0 for infinite
    * @param maxItemAge max age of cached items in ms before they are purged.
    */
-  constructor(maxItems: number = 0, maxItemAge: number = 0) {
-    super(maxItems)
+  constructor(
+    maxItems: number = 0,
+    maxItemAge: number = 0,
+    storage = CacheEngineTypes.Memory,
+    displayName?: string,
+    connectionName?: string
+  ) {
+    super(maxItems, storage, displayName, connectionName)
     this.maxItemAge = maxItemAge
   }
 
@@ -30,35 +36,26 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
    * @param maxItems max items
    * @param maxItemAge, max age in ms, 0 for infinite
    */
-  public initialize(maxItems: number, maxItemAge: number = 0) {
-    super.initialize(maxItems)
+  public async initialize(maxItems: number, maxItemAge: number = 0) {
+    await super.initialize(maxItems)
     this.maxItemAge = maxItemAge
-    let now = new Date().getTime()
-    for (const key of this.cacheKeyOrder) {
-      const item = this.cache.get(key)!
-      if (now - item.timestamp > this.maxItemAge) {
-        this.delete(key)
-      }
-    }
   }
 
-  public get(key: string): T | undefined {
-    const item: CacheItem<T> | undefined = this.cache.get(key)
+  public async get(key: string): Promise<T | undefined> {
+    const item = await this.storageEngine.get(key)
     if (item) {
       if (new Date().getTime() < item.timestamp + this.maxItemAge) {
-        item.lastAccess = new Date().getTime()
-        this.cacheKeyOrder.delete(key)
-        this.cacheKeyOrder.add(key)
         return item.data
       } else if (this.maxItemAge > 0) {
-        this.delete(key) // cached item has expired.
+        await this.delete(key) // cached item has expired.
       }
     }
   }
 
-  public getHealthCheckMeta(): object {
+  public async getHealthCheckMeta(): Promise<object> {
+    const size = await this.getSize()
     return {
-      size: this.size,
+      size: size,
       maxSize: this.maxSize,
       maxAge: this.maxItemAge,
       maxAgeDesc: `${this.maxItemAge} ms (${Duration.fromMillis(this.maxItemAge)
@@ -66,18 +63,19 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
         .toFixed(2)} min)`,
       purge_count: this._purged,
       last_cleared: this._lastCleared,
-      items: this.getHealthInfo(),
+      items: await this.getHealthInfo(),
     }
   }
 
-  protected getHealthInfo(): TLRUCacheHealthCheck[] {
+  protected async getHealthInfo(): Promise<TLRUCacheHealthCheck[]> {
     let info: TLRUCacheHealthCheck[] = []
     let now = new Date().getTime()
-    for (const key of this.cacheKeyOrder) {
-      let item = this.cache.get(key)!
+    const keys = await this.storageEngine.getKeys()
+    for (const key of keys) {
+      let item = (await this.storageEngine.get(key))!
       let age = now - item.timestamp
       let ttl = this.maxItemAge !== 0 ? this.maxItemAge - age : Number.MAX_VALUE
-      const accessInfo = this.getItemHealthMetaData(key)
+      const accessInfo = await this.getItemHealthMetaData(key)
       info.push({
         key: key,
         age: age,

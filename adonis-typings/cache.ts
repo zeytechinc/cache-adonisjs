@@ -9,5 +9,11 @@ declare module '@ioc:Skrenek/Adonis/Cache' {
     data: T
     timestamp: number
     lastAccess: number
+    serialize(): string
+  }
+
+  export enum CacheEngineTypes {
+    Memory,
+    Redis,
   }
 }

@@ -7,7 +7,7 @@ declare module '@ioc:Skrenek/Adonis/Cache/TLRUCache' {
   }
 
   export type TLRUCacheConstructorContract = {
-    new <T>(maxItems?: number, maxItemAge?: number): TLRUCacheContract<T>
+    new <T>(displayName?: string, maxItems?: number, maxItemAge?: number): TLRUCacheContract<T>
   }
 
   export interface TLRUCacheHealthCheck {

@@ -1,23 +1,28 @@
 declare module '@ioc:Skrenek/Adonis/Cache/LRUCache' {
-  import { CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+  import { CacheEngineTypes, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
   import { Checker } from '@ioc:Adonis/Core/HealthCheck'
 
   export interface LRUCacheContract<T> {
-    initialize(maxItems: number): void
-    set(key: string, data: T | CacheItemContract<T>): void
-    get(key: string): T | undefined
-    delete(key: string): boolean
-    clear(): void
+    initialize(maxItems: number): Promise<void>
+    set(key: string, data: T | CacheItemContract<T>): Promise<void>
+    get(key: string): Promise<T | undefined>
+    delete(key: string): Promise<boolean>
+    clear(): Promise<void>
     readonly maxSize: number
     readonly purged: number
     readonly lastCleared: string
-    getHealthCheckMessage(): string
-    getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): object
-    getHealthChecker(displayName: string): Checker
+    getHealthCheckMessage(): Promise<string>
+    getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object>
+    getHealthChecker(): Promise<Checker>
   }
 
   export type LRUCacheConstructorContract = {
-    new <T>(maxItems?: number): LRUCacheContract<T>
+    new <T>(
+      maxItems: number,
+      storage: CacheEngineTypes,
+      displayName?: string,
+      connectionName?: string
+    ): LRUCacheContract<T>
   }
 
   export const LRUCache: LRUCacheConstructorContract

@@ -10,6 +10,18 @@ class CacheItem<T> implements CacheItemContract<T> {
     this.timestamp = new Date().getTime()
     this.lastAccess = this.timestamp
   }
+
+  public serialize() {
+    return JSON.stringify(this)
+  }
+
+  public static parse<U>(data: string): CacheItem<U> {
+    const temp = JSON.parse(data)
+    const item = new CacheItem(temp.data)
+    item.timestamp = temp.timestamp
+    item.lastAccess = temp.lastAccess
+    return item
+  }
 }
 
 export default CacheItem

@@ -11,3 +11,5 @@ export const healthCheckDateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'
  *
  */
 export const healthChecksEnabled = true
+
+export const storage: 'memory' | 'redis' = 'memory'

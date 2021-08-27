@@ -1,6 +1,6 @@
 {
   "name": "@skrenek/cache-adonisjs",
-  "version": "0.1.30",
+  "version": "0.2.0",
   "description": "Provides LRU and Timed LRU in-memory cache with support for Adonis",
   "main": "build/providers/CacheProvider.js",
   "repository": {
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@adonisjs/core": "^5.1.4",
     "@adonisjs/mrm-preset": "^3.0.0",
+    "@adonisjs/redis": "^7.0.8",
     "@adonisjs/require-ts": "^2.0.3",
     "@adonisjs/sink": "^5.1.2",
     "@types/node": "^14.14.37",
