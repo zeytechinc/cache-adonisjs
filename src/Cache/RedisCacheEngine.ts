@@ -1,6 +1,6 @@
 import { CacheEngine } from './CacheEngine'
 import CacheItem from './CacheItem'
-import { string } from '@ioc:Adonis/Core/Helpers'
+import { string } from '@poppinss/utils/build/helpers'
 import Redis, {
   RedisClusterConnectionContract,
   RedisConnectionContract,
