@@ -1,7 +1,7 @@
 import { Duration } from 'luxon'
 import { TLRUCacheContract, TLRUCacheHealthCheck } from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
 import { LRUCache } from './LRUCache'
-import { CacheEngineTypes } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheEngineTypes } from './CacheEngine'
 
 /**
  * This implements a Timed Least Recently Used cache.  See https://en.wikipedia.org/wiki/Cache_replacement_policies#Time_aware_least_recently_used_(TLRU)

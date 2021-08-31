@@ -11,3 +11,8 @@ export interface CacheEngine<T> {
   getKeys(): Promise<Set<string>>
   prune(maxSize: number): Promise<number>
 }
+
+export enum CacheEngineTypes {
+  Memory,
+  Redis,
+}
