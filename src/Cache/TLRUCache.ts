@@ -59,7 +59,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
       maxSize: this.maxSize,
       maxAge: this.maxItemAge,
       maxAgeDesc: `${this.maxItemAge} ms (${Duration.fromMillis(this.maxItemAge)
-        .as('minute')
+        .as('minutes')
         .toFixed(2)} min)`,
       purge_count: this._purged,
       last_cleared: this._lastCleared,
