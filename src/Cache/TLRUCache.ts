@@ -81,12 +81,12 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
           key: key,
           age: age,
           ageDesc: `${now - item.timestamp} ms (${Duration.fromMillis(now - item.timestamp)
-            .as('minute')
+            .as('minutes')
             .toFixed(2)} min)`,
           ttl: ttl,
           ttlDesc:
             this.maxItemAge > 0
-              ? `${ttl} ms (${Duration.fromMillis(ttl).as('minute').toFixed(2)} min)`
+              ? `${ttl} ms (${Duration.fromMillis(ttl).as('minutes').toFixed(2)} min)`
               : 'Never expires',
           expired: now - item.timestamp > this.maxItemAge,
           lastAccess: accessInfo!.lastAccessed,
