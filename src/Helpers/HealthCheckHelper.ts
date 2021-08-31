@@ -24,8 +24,8 @@ export class HealthCheckHelper implements HealthCheckHelperContract {
     const age = Duration.fromMillis(now.toMillis() - date.toMillis())
     return {
       utc: date.toUTC().toFormat(dateFormat),
-      age: age.as('millisecond'),
-      ageDesc: `${age.as('millisecond')} ms (${age.as('minute').toFixed(2)} min)`,
+      age: age.as('milliseconds'),
+      ageDesc: `${age.as('milliseconds')} ms (${age.as('minutes').toFixed(2)} min)`,
     }
   }
 }
