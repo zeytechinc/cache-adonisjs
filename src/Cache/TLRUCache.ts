@@ -72,24 +72,40 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     let now = new Date().getTime()
     const keys = await this.storageEngine.getKeys()
     for (const key of keys) {
-      let item = (await this.storageEngine.get(key))!
-      let age = now - item.timestamp
-      let ttl = this.maxItemAge !== 0 ? this.maxItemAge - age : Number.MAX_VALUE
-      const accessInfo = await this.getItemHealthMetaData(key)
-      info.push({
-        key: key,
-        age: age,
-        ageDesc: `${now - item.timestamp} ms (${Duration.fromMillis(now - item.timestamp)
-          .as('minute')
-          .toFixed(2)} min)`,
-        ttl: ttl,
-        ttlDesc:
-          this.maxItemAge > 0
-            ? `${ttl} ms (${Duration.fromMillis(ttl).as('minute').toFixed(2)} min)`
-            : 'Never expires',
-        expired: now - item.timestamp > this.maxItemAge,
-        lastAccess: accessInfo!.lastAccessed,
-      })
+      let item = await this.storageEngine.get(key)
+      if (item) {
+        let age = now - item.timestamp
+        let ttl = this.maxItemAge !== 0 ? this.maxItemAge - age : Number.MAX_VALUE
+        const accessInfo = await this.getItemHealthMetaData(key)
+        info.push({
+          key: key,
+          age: age,
+          ageDesc: `${now - item.timestamp} ms (${Duration.fromMillis(now - item.timestamp)
+            .as('minute')
+            .toFixed(2)} min)`,
+          ttl: ttl,
+          ttlDesc:
+            this.maxItemAge > 0
+              ? `${ttl} ms (${Duration.fromMillis(ttl).as('minute').toFixed(2)} min)`
+              : 'Never expires',
+          expired: now - item.timestamp > this.maxItemAge,
+          lastAccess: accessInfo!.lastAccessed,
+        })
+      } else {
+        info.push({
+          key: key,
+          age: 0,
+          ageDesc: 'No value found in storage for key.',
+          ttl: 0,
+          ttlDesc: '',
+          expired: true,
+          lastAccess: {
+            age: 0,
+            ageDesc: '',
+            utc: '',
+          },
+        })
+      }
     }
     return info
   }

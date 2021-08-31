@@ -116,11 +116,16 @@ export class LRUCache<T> implements LRUCacheContract<T> {
 
   protected async getItemHealthMetaData(key: string, dateFormat?: string) {
     const item = await this.storageEngine.get(key)
-    if (key) {
+    if (item) {
       return {
         key: key,
-        dateCreated: new Date(item!.timestamp),
-        lastAccessed: HealthCheckHelper.getAccessInfo(item!.lastAccess, dateFormat),
+        dateCreated: new Date(item.timestamp),
+        lastAccessed: HealthCheckHelper.getAccessInfo(item.lastAccess, dateFormat),
+      }
+    } else {
+      return {
+        key: key,
+        error: 'No value found for key.',
       }
     }
   }
