@@ -58,7 +58,7 @@ export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
       item.lastAccess = now // use the last access from the sorted set ranking.
       return item
     } else {
-      await this._redisConnection.zrem(finalKey)
+      await this._redisConnection.zrem(this.keyPrefix, finalKey)
     }
   }
 
