@@ -1,4 +1,4 @@
-import Redis from '@ioc:Adonis/Addons/Redis'
+import { RedisManagerContract } from '@ioc:Adonis/Addons/Redis'
 import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
 import { LRUCache } from './LRUCache'
 import { TLRUCache } from './TLRUCache'
@@ -8,11 +8,11 @@ import { CacheEngineContract, CacheEngineType } from '@ioc:Skrenek/Adonis/Cache'
 import MemoryCacheEngine from './MemoryCacheEngine'
 
 export default class CacheManager {
-  constructor(protected _redisManager: typeof Redis) {
+  constructor(protected _redisManager: RedisManagerContract) {
     this.caches = new Map()
   }
 
-  private caches: Map<string, LRUCacheContract<any>|TLRUCacheContract<any>>
+  private caches: Map<string, LRUCacheContract<any> | TLRUCacheContract<any>>
 
   private buildCacheEngine<T>(
     storage: CacheEngineType,
@@ -23,7 +23,9 @@ export default class CacheManager {
     let engine: CacheEngineContract<T>
     if (storage === 'redis') {
       const redis = new RedisCacheEngine<T>(displayName, maxItemAge)
-      redis.redisConnection = connectionName ? Redis.connection(connectionName) : Redis.connection()
+      redis.redisConnection = connectionName
+        ? this._redisManager.connection(connectionName)
+        : this._redisManager.connection()
       engine = redis
     } else {
       engine = new MemoryCacheEngine<T>()

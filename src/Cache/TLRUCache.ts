@@ -54,9 +54,9 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     }
   }
 
-  public async getHealthCheckMeta(): Promise<object> {
+  public async getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object> {
     const size = await this.getSize()
-    return {
+    const meta = {
       size: size,
       maxSize: this.maxSize,
       maxAge: this.maxItemAge,
@@ -65,20 +65,25 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
         .toFixed(2)} min)`,
       purge_count: this._purged,
       last_cleared: this._lastCleared,
-      items: await this.getHealthInfo(),
+      items: [] as TLRUCacheHealthCheckContract[],
     }
+    if (includeItems) {
+      meta.items = await this.getHealthInfo(dateFormat)
+    }
+    return meta
   }
 
-  protected async getHealthInfo(): Promise<TLRUCacheHealthCheckContract[]> {
+  protected async getHealthInfo(dateFormat?: string): Promise<TLRUCacheHealthCheckContract[]> {
     let info: TLRUCacheHealthCheckContract[] = []
     let now = new Date().getTime()
+    const maxItemAgeMs = this.maxItemAge * 1000
     const keys = await this.storageEngine.getKeys()
     for (const key of keys) {
-      let item = await this.storageEngine.get(key)
+      let item = await this.storageEngine.getRaw(key)
       if (item) {
         let age = now - item.timestamp
-        let ttl = this.maxItemAge !== 0 ? this.maxItemAge - age : Number.MAX_VALUE
-        const accessInfo = await this.getItemHealthMetaData(key)
+        let ttl = this.maxItemAge !== 0 ? maxItemAgeMs - age : Number.MAX_VALUE
+        const accessInfo = await this.getItemHealthMetaData(key, dateFormat)
         info.push({
           key: key,
           age: age,
@@ -90,7 +95,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
             this.maxItemAge > 0
               ? `${ttl} ms (${Duration.fromMillis(ttl).as('minutes').toFixed(2)} min)`
               : 'Never expires',
-          expired: now - item.timestamp > this.maxItemAge,
+          expired: now - item.timestamp > maxItemAgeMs,
           lastAccess: accessInfo!.lastAccessed,
         })
       } else {
@@ -112,6 +117,9 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     return info
   }
 
+  /**
+   * The max age of items in the cache in seconds.
+   */
   public get maxAge(): number {
     return this.maxItemAge
   }

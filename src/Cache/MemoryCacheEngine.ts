@@ -31,6 +31,11 @@ export default class MemoryCacheEngine<T> implements CacheEngineContract<T> {
     return item
   }
 
+  public async getRaw(key: string): Promise<CacheItem<T> | undefined> {
+    const item = this.cache.get(key)
+    return item
+  }
+
   public async delete(key: string): Promise<boolean> {
     const deleted = this.cache.delete(key)
     if (deleted) {
@@ -57,6 +62,9 @@ export default class MemoryCacheEngine<T> implements CacheEngineContract<T> {
   }
 
   public async prune(maxSize: number): Promise<number> {
+    if (maxSize === 0) {
+      return 0
+    }
     const size = await this.getSize()
     let pruned = 0
     let oldestKey: string | undefined

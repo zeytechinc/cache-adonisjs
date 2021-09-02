@@ -103,7 +103,7 @@ export class LRUCache<T> implements LRUCacheContract<T> {
   }
 
   protected async getItemHealthMetaData(key: string, dateFormat?: string) {
-    const item = await this.storageEngine.get(key)
+    const item = await this.storageEngine.getRaw(key)
     if (item) {
       return {
         key: key,
@@ -118,16 +118,16 @@ export class LRUCache<T> implements LRUCacheContract<T> {
     }
   }
 
-  public async getHealthChecker(): Promise<Checker> {
+  public async getHealthChecker(includeItems?: boolean, dateFormat?: string): Promise<Checker> {
     return async () => {
       const size = await this.getSize()
       return {
         displayName: this.displayName,
         health: {
-          healthy: size < this.maxSize,
+          healthy: this.maxSize === 0 ? true : size < this.maxSize,
           message: await this.getHealthCheckMessage(),
         },
-        meta: await this.getHealthCheckMeta(),
+        meta: await this.getHealthCheckMeta(includeItems, dateFormat),
       }
     }
   }

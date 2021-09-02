@@ -9,10 +9,10 @@ export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
   private _redisConnection: RedisConnectionContract | RedisClusterConnectionContract
 
   constructor(private displayName?: string, keyTtl?: number) {
+    this.keyPrefix = ''
     if (this.displayName) {
       this.keyPrefix = `${string.snakeCase(this.displayName)}_`
     }
-    this.keyPrefix = ''
     this.keyTtl = keyTtl
   }
 
@@ -49,13 +49,23 @@ export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
   }
 
   public async get(key: string): Promise<CacheItem<T> | undefined> {
-    const val = await this._redisConnection.get(`${this.keyPrefix}${key}`)
+    const finalKey = `${this.keyPrefix}${key}`
+    const val = await this._redisConnection.get(finalKey)
     if (val) {
       const now = new Date().getTime()
-      this._redisConnection.zadd(this.keyPrefix, now, `${this.keyPrefix}${key}`) // update the rank score for the key
+      this._redisConnection.zadd(this.keyPrefix, now, finalKey) // update the rank score for the key
       const item = CacheItem.parse<T>(val)
       item.lastAccess = now // use the last access from the sorted set ranking.
       return item
+    } else {
+      await this._redisConnection.zrem(finalKey)
+    }
+  }
+
+  public async getRaw(key: string): Promise<CacheItem<T> | undefined> {
+    const val = await this._redisConnection.get(key)
+    if (val) {
+      return CacheItem.parse<T>(val)
     }
   }
 
@@ -71,11 +81,7 @@ export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
   }
 
   public async getSize(): Promise<number> {
-    return this._redisConnection.zcount(
-      this.keyPrefix,
-      Number.MIN_SAFE_INTEGER,
-      Number.MAX_SAFE_INTEGER
-    )
+    return this._redisConnection.zcard(this.keyPrefix)
   }
 
   public async getOldestKey(): Promise<string | undefined> {
@@ -91,6 +97,9 @@ export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
   }
 
   public async prune(maxSize: number): Promise<number> {
+    if (maxSize === 0) {
+      return 0
+    }
     const size = await this.getSize()
     let pruned = 0
     if (maxSize < size) {

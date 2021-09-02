@@ -13,7 +13,7 @@ declare module '@ioc:Skrenek/Adonis/Cache/LRUCache' {
     readonly lastCleared: string
     getHealthCheckMessage(): Promise<string>
     getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object>
-    getHealthChecker(): Promise<Checker>
+    getHealthChecker(includeItems?: boolean, dateFormat?: string): Promise<Checker>
   }
 
   // export type LRUCacheConstructorContract = {

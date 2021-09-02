@@ -1,4 +1,3 @@
-import { RedisManagerContract } from '@ioc:Adonis/Addons/Redis'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import CacheManager from '../src/Cache/CacheManager'
 
@@ -20,7 +19,7 @@ export default class CacheProvider {
 
   public boot() {
     this.app.container.singleton('Skrenek/Adonis/Cache/CacheManager', () => {
-      const redis: RedisManagerContract = this.app.container.use('Adonis/Addons/Redis')
+      const redis = this.app.container.use('Adonis/Addons/Redis')
       return new CacheManager(redis)
     })
   }
