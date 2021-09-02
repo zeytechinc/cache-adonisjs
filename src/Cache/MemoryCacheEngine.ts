@@ -1,7 +1,7 @@
-import { CacheEngine } from './CacheEngine'
+import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
 import CacheItem from './CacheItem'
 
-export default class MemoryCacheEngine<T> implements CacheEngine<T> {
+export default class MemoryCacheEngine<T> implements CacheEngineContract<T> {
   protected cache: Map<string, CacheItem<T>> = new Map()
   protected cacheKeyOrder: Set<string> = new Set()
 
@@ -9,7 +9,7 @@ export default class MemoryCacheEngine<T> implements CacheEngine<T> {
     return this.cache.has(key)
   }
 
-  public async set(key: string, data: T | CacheItem<T>) {
+  public async set(key: string, data: T | CacheItemContract<T>) {
     if (!this.cache.has(key)) {
       this.cacheKeyOrder.add(key)
     }
@@ -17,7 +17,7 @@ export default class MemoryCacheEngine<T> implements CacheEngine<T> {
       data.lastAccess = new Date().getTime()
       this.cache.set(key, data)
     } else {
-      this.cache.set(key, new CacheItem(data))
+      this.cache.set(key, new CacheItem<T>(data as T))
     }
   }
 

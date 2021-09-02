@@ -1,7 +1,10 @@
 import { Duration } from 'luxon'
-import { TLRUCacheContract, TLRUCacheHealthCheck } from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
+import {
+  TLRUCacheContract,
+  TLRUCacheHealthCheckContract,
+} from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
 import { LRUCache } from './LRUCache'
-import { CacheEngineTypes } from './CacheEngine'
+import { CacheEngineContract } from '@ioc:Skrenek/Adonis/Cache'
 
 /**
  * This implements a Timed Least Recently Used cache.  See https://en.wikipedia.org/wiki/Cache_replacement_policies#Time_aware_least_recently_used_(TLRU)
@@ -20,13 +23,12 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
    * @param maxItemAge max age of cached items in ms before they are purged.
    */
   constructor(
+    storage: CacheEngineContract<T>,
     maxItems: number = 0,
     maxItemAge: number = 0,
-    storage = CacheEngineTypes.Memory,
-    displayName?: string,
-    connectionName?: string
+    displayName?: string
   ) {
-    super(maxItems, storage, displayName, connectionName)
+    super(storage, maxItems, displayName)
     this.maxItemAge = maxItemAge
   }
 
@@ -67,8 +69,8 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     }
   }
 
-  protected async getHealthInfo(): Promise<TLRUCacheHealthCheck[]> {
-    let info: TLRUCacheHealthCheck[] = []
+  protected async getHealthInfo(): Promise<TLRUCacheHealthCheckContract[]> {
+    let info: TLRUCacheHealthCheckContract[] = []
     let now = new Date().getTime()
     const keys = await this.storageEngine.getKeys()
     for (const key of keys) {

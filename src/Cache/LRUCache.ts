@@ -3,9 +3,7 @@ import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
 import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
 import CacheItem from './CacheItem'
 import cuid from 'cuid'
-import { CacheEngine, CacheEngineTypes } from './CacheEngine'
-import MemoryCacheEngine from './MemoryCacheEngine'
-import RedisCacheEngine from './RedisCacheEngine'
+import { CacheEngineContract } from '@ioc:Skrenek/Adonis/Cache'
 
 /**
  * This class implements a least recently used in-memory cache specifically tailored toward use in AdonisJS.  While
@@ -17,21 +15,12 @@ export class LRUCache<T> implements LRUCacheContract<T> {
   protected _purged: number = 0
   protected _lastCleared: string = 'never'
   protected displayName: string
-  protected storageEngine: CacheEngine<T>
+  protected storageEngine: CacheEngineContract<T>
 
-  constructor(
-    maxItems: number = 0,
-    storage = CacheEngineTypes.Memory,
-    displayName?: string,
-    connectionName?: string
-  ) {
+  constructor(storage: CacheEngineContract<T>, maxItems: number = 0, displayName?: string) {
     this.maxItems = maxItems
     this.displayName = displayName || cuid()
-    if (storage === CacheEngineTypes.Memory) {
-      this.storageEngine = new MemoryCacheEngine<T>()
-    } else {
-      this.storageEngine = new RedisCacheEngine<T>(this.displayName, connectionName)
-    }
+    this.storageEngine = storage
   }
 
   /**
@@ -141,5 +130,9 @@ export class LRUCache<T> implements LRUCacheContract<T> {
         meta: await this.getHealthCheckMeta(),
       }
     }
+  }
+
+  public getStorageEngine(): CacheEngineContract<T> {
+    return this.storageEngine
   }
 }

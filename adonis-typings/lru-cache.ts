@@ -1,5 +1,5 @@
 declare module '@ioc:Skrenek/Adonis/Cache/LRUCache' {
-  import { CacheEngineTypes, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+  import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
   import { Checker } from '@ioc:Adonis/Core/HealthCheck'
 
   export interface LRUCacheContract<T> {
@@ -16,15 +16,14 @@ declare module '@ioc:Skrenek/Adonis/Cache/LRUCache' {
     getHealthChecker(): Promise<Checker>
   }
 
-  export type LRUCacheConstructorContract = {
-    new <T>(
-      maxItems: number,
-      storage: CacheEngineTypes,
-      displayName?: string,
-      connectionName?: string
-    ): LRUCacheContract<T>
-  }
+  // export type LRUCacheConstructorContract = {
+  //   new <T>(
+  //     maxItems: number,
+  //     storage: CacheEngineContract<T>,
+  //     displayName?: string
+  //   ): LRUCacheContract<T>
+  // }
 
-  export const LRUCache: LRUCacheConstructorContract
-  export default LRUCache
+  // export const LRUCache: LRUCacheConstructorContract
+  // export default LRUCache
 }

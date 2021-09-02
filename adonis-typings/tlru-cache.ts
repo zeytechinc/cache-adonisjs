@@ -1,22 +1,22 @@
 declare module '@ioc:Skrenek/Adonis/Cache/TLRUCache' {
   import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
-  import { CacheEngineTypes, LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
+  import { CacheEngineContract, LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
 
   export interface TLRUCacheContract<T> extends LRUCacheContract<T> {
     readonly maxAge: number
   }
 
-  export type TLRUCacheConstructorContract = {
-    new <T>(
-      maxItems: number,
-      maxItemAge: number,
-      storage: CacheEngineTypes,
-      displayName?: string,
-      connectionName?: string
-    ): TLRUCacheContract<T>
-  }
+  // export type TLRUCacheConstructorContract = {
+  //   new <T>(
+  //     maxItems: number,
+  //     maxItemAge: number,
+  //     storage?: CacheEngineContract<T>,
+  //     displayName?: string,
+  //     connectionName?: string
+  //   ): TLRUCacheContract<T>
+  // }
 
-  export interface TLRUCacheHealthCheck {
+  export interface TLRUCacheHealthCheckContract {
     key: string
     age: number
     ageDesc: string
@@ -26,6 +26,6 @@ declare module '@ioc:Skrenek/Adonis/Cache/TLRUCache' {
     lastAccess?: LastAccessInfoContract
   }
 
-  export const TLRUCache: TLRUCacheConstructorContract
-  export default TLRUCache
+  // export const TLRUCache: TLRUCacheConstructorContract
+  // export default TLRUCache
 }

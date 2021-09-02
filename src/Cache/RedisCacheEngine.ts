@@ -1,16 +1,14 @@
-import { CacheEngine } from './CacheEngine'
-import CacheItem from './CacheItem'
 import { string } from '@poppinss/utils/build/helpers'
-import Redis, {
-  RedisClusterConnectionContract,
-  RedisConnectionContract,
-} from '@ioc:Adonis/Addons/Redis'
+import { RedisClusterConnectionContract, RedisConnectionContract } from '@ioc:Adonis/Addons/Redis'
+import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+import CacheItem from './CacheItem'
 
-export default class RedisCacheEngine<T> implements CacheEngine<T> {
+export default class RedisCacheEngine<T> implements CacheEngineContract<T> {
   private keyPrefix: string
   private _keyTtl: number | undefined
+  private _redisConnection: RedisConnectionContract | RedisClusterConnectionContract
 
-  constructor(private displayName?: string, private connection?: string, keyTtl?: number) {
+  constructor(private displayName?: string, keyTtl?: number) {
     if (this.displayName) {
       this.keyPrefix = `${string.snakeCase(this.displayName)}_`
     }
@@ -18,22 +16,19 @@ export default class RedisCacheEngine<T> implements CacheEngine<T> {
     this.keyTtl = keyTtl
   }
 
+  public set redisConnection(value: RedisConnectionContract | RedisClusterConnectionContract) {
+    this._redisConnection = value
+  }
+
   public set keyTtl(value: number | undefined) {
     this._keyTtl = value
   }
 
-  private get redis(): RedisConnectionContract | RedisClusterConnectionContract {
-    if (this.connection) {
-      return Redis.connection(this.connection)
-    }
-    return Redis.connection()
-  }
-
   public async has(key: string): Promise<boolean> {
-    return (await this.redis.exists(`${this.keyPrefix}${key}`)) === 1
+    return (await this._redisConnection.exists(`${this.keyPrefix}${key}`)) === 1
   }
 
-  public async set(key: string, data: T | CacheItem<T>): Promise<void> {
+  public async set(key: string, data: T | CacheItemContract<T>): Promise<void> {
     const finalKey = `${this.keyPrefix}${key}`
     const now = new Date().getTime()
     let finalData: CacheItem<T>
@@ -41,9 +36,9 @@ export default class RedisCacheEngine<T> implements CacheEngine<T> {
       data.lastAccess = now
       finalData = data
     } else {
-      finalData = new CacheItem(data)
+      finalData = new CacheItem<T>(data as T)
     }
-    const pipeline = this.redis.pipeline()
+    const pipeline = this._redisConnection.pipeline()
     if (this._keyTtl) {
       pipeline.setex(finalKey, this._keyTtl, finalData.serialize())
     } else {
@@ -54,10 +49,10 @@ export default class RedisCacheEngine<T> implements CacheEngine<T> {
   }
 
   public async get(key: string): Promise<CacheItem<T> | undefined> {
-    const val = await this.redis.get(`${this.keyPrefix}${key}`)
+    const val = await this._redisConnection.get(`${this.keyPrefix}${key}`)
     if (val) {
       const now = new Date().getTime()
-      this.redis.zadd(this.keyPrefix, now, `${this.keyPrefix}${key}`) // update the rank score for the key
+      this._redisConnection.zadd(this.keyPrefix, now, `${this.keyPrefix}${key}`) // update the rank score for the key
       const item = CacheItem.parse<T>(val)
       item.lastAccess = now // use the last access from the sorted set ranking.
       return item
@@ -65,29 +60,33 @@ export default class RedisCacheEngine<T> implements CacheEngine<T> {
   }
 
   public async delete(key: string): Promise<boolean> {
-    this.redis.zrem(this.keyPrefix, `${this.keyPrefix}${key}`)
-    return (await this.redis.del(`${this.keyPrefix}${key}`)) > 0
+    this._redisConnection.zrem(this.keyPrefix, `${this.keyPrefix}${key}`)
+    return (await this._redisConnection.del(`${this.keyPrefix}${key}`)) > 0
   }
 
   public async clear(): Promise<void> {
-    const keys = await this.redis.zrange(this.keyPrefix, 0, -1)
+    const keys = await this._redisConnection.zrange(this.keyPrefix, 0, -1)
     keys.push(this.keyPrefix)
-    await this.redis.del(...keys)
+    await this._redisConnection.del(...keys)
   }
 
   public async getSize(): Promise<number> {
-    return this.redis.zcount(this.keyPrefix, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
+    return this._redisConnection.zcount(
+      this.keyPrefix,
+      Number.MIN_SAFE_INTEGER,
+      Number.MAX_SAFE_INTEGER
+    )
   }
 
   public async getOldestKey(): Promise<string | undefined> {
-    const oldest = await this.redis.zrange(this.keyPrefix, 0, 0)
+    const oldest = await this._redisConnection.zrange(this.keyPrefix, 0, 0)
     if (oldest && oldest.length) {
       return oldest[0]
     }
   }
 
   public async getKeys(): Promise<Set<string>> {
-    const keys = await this.redis.zrange(this.keyPrefix, 0, -1)
+    const keys = await this._redisConnection.zrange(this.keyPrefix, 0, -1)
     return new Set(keys)
   }
 
@@ -96,8 +95,8 @@ export default class RedisCacheEngine<T> implements CacheEngine<T> {
     let pruned = 0
     if (maxSize < size) {
       pruned = size - maxSize
-      const keys = await this.redis.zrange(this.keyPrefix, 0, pruned - 1)
-      const pipeline = this.redis.pipeline()
+      const keys = await this._redisConnection.zrange(this.keyPrefix, 0, pruned - 1)
+      const pipeline = this._redisConnection.pipeline()
       pipeline.zrem(this.keyPrefix, keys)
       pipeline.del(...keys)
       await pipeline.exec()
