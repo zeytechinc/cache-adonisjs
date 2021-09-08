@@ -1,6 +1,6 @@
 import { DateTime, Duration } from 'luxon'
-import { HealthCheckHelperContract } from '@ioc:Skrenek/Adonis/Cache/HealthCheckHelper'
-import { LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
+import { HealthCheckHelperContract } from '@ioc:Adonis/Addons/Zeytech/Cache/HealthCheckHelper'
+import { LastAccessInfoContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 
 export class HealthCheckHelper implements HealthCheckHelperContract {
   public static formatDate(date: Date, dateFormat = 'yyyy-LL-dd HH:mm:ss ZZZZ'): string {

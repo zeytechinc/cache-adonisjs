@@ -1,6 +1,6 @@
 import { string } from '@poppinss/utils/build/helpers'
 import { RedisClusterConnectionContract, RedisConnectionContract } from '@ioc:Adonis/Addons/Redis'
-import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheEngineContract, CacheItemContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 import CacheItem from './CacheItem'
 
 export default class RedisCacheEngine<T> implements CacheEngineContract<T> {

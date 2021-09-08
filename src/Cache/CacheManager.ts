@@ -1,10 +1,10 @@
 import { RedisManagerContract } from '@ioc:Adonis/Addons/Redis'
-import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
+import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
 import { LRUCache } from './LRUCache'
 import { TLRUCache } from './TLRUCache'
-import { TLRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
+import { TLRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache'
 import RedisCacheEngine from './RedisCacheEngine'
-import { CacheEngineContract, CacheEngineType } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheEngineContract, CacheEngineType } from '@ioc:Adonis/Addons/Zeytech/Cache'
 import MemoryCacheEngine from './MemoryCacheEngine'
 
 export default class CacheManager {

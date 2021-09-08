@@ -1,6 +1,6 @@
-declare module '@ioc:Skrenek/Adonis/Cache' {
-  import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
-  import { TLRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/TLRUCache'
+declare module '@ioc:Adonis/Addons/Zeytech/Cache' {
+  import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
+  import { TLRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache'
   export interface LastAccessInfoContract {
     utc: string
     age: number

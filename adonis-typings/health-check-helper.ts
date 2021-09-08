@@ -1,5 +1,5 @@
-declare module '@ioc:Skrenek/Adonis/Cache/HealthCheckHelper' {
-  import { LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
+declare module '@ioc:Adonis/Addons/Zeytech/Cache/HealthCheckHelper' {
+  import { LastAccessInfoContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 
   export class HealthCheckHelperContract {
     public static getAccessInfo(ms?: number): LastAccessInfoContract

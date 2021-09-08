@@ -1,6 +1,6 @@
-declare module '@ioc:Skrenek/Adonis/Cache/TLRUCache' {
-  import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
-  import { CacheEngineContract, LastAccessInfoContract } from '@ioc:Skrenek/Adonis/Cache'
+declare module '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache' {
+  import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
+  import { LastAccessInfoContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 
   export interface TLRUCacheContract<T> extends LRUCacheContract<T> {
     readonly maxAge: number

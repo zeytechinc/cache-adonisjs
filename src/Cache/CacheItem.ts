@@ -1,4 +1,4 @@
-import { CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheItemContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 
 class CacheItem<T> implements CacheItemContract<T> {
   public data: T

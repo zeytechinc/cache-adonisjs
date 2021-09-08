@@ -1,4 +1,4 @@
-import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheEngineContract, CacheItemContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 import CacheItem from './CacheItem'
 
 export default class MemoryCacheEngine<T> implements CacheEngineContract<T> {

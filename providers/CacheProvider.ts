@@ -6,25 +6,25 @@ export default class CacheProvider {
   public static needsApplication = true
 
   public register() {
-    this.app.container.bind('Skrenek/Adonis/Cache/HealthCheckHelper', () => {
+    this.app.container.bind('Adonis/Addons/Zeytech/Cache/HealthCheckHelper', () => {
       const { HealthCheckHelper } = require('../src/Helpers/HealthCheckHelper')
       return HealthCheckHelper
     })
 
-    this.app.container.bind('Skrenek/Adonis/Cache/CacheItem', () => {
+    this.app.container.bind('Adonis/Addons/Zeytech/Cache/CacheItem', () => {
       const CacheItem = require('../src/Cache/CacheItem')
       return CacheItem
     })
   }
 
   public boot() {
-    this.app.container.singleton('Skrenek/Adonis/Cache/CacheManager', () => {
+    this.app.container.singleton('Adonis/Addons/Zeytech/Cache/CacheManager', () => {
       const redis = this.app.container.use('Adonis/Addons/Redis')
       return new CacheManager(redis)
     })
   }
 
   public async shutdown() {
-    await this.app.container.resolveBinding('Skrenek/Adonis/Cache/CacheManager').shutdown()
+    await this.app.container.resolveBinding('Adonis/Addons/Zeytech/Cache/CacheManager').shutdown()
   }
 }

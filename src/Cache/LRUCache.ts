@@ -1,9 +1,9 @@
 import { Checker } from '@ioc:Adonis/Core/HealthCheck'
-import { LRUCacheContract } from '@ioc:Skrenek/Adonis/Cache/LRUCache'
+import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
 import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
 import CacheItem from './CacheItem'
 import cuid from 'cuid'
-import { CacheEngineContract } from '@ioc:Skrenek/Adonis/Cache'
+import { CacheEngineContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
 
 /**
  * This class implements a least recently used in-memory cache specifically tailored toward use in AdonisJS.  While

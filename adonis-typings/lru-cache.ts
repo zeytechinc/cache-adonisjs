@@ -1,5 +1,5 @@
-declare module '@ioc:Skrenek/Adonis/Cache/LRUCache' {
-  import { CacheEngineContract, CacheItemContract } from '@ioc:Skrenek/Adonis/Cache'
+declare module '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache' {
+  import { CacheItemContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
   import { Checker } from '@ioc:Adonis/Core/HealthCheck'
 
   export interface LRUCacheContract<T> {
