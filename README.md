@@ -40,7 +40,7 @@ Once you have a cache instance available to you, you can work with cached items 
 #### (Re)Initializing a cache
 If you so choose, you can reinitialize a cache to expand or shrink its max size.  If you shrink its max size, items will be pruned in LRU order until the new max size is reached.
 
-`cache.initialize(100)`
+`await cache.initialize(100)`
 
 #### Get / Set Items
 ```typescript
@@ -63,7 +63,24 @@ await cache.clear()
 * lastCleared - ISO 8601 timestamp of when the cache was last cleared or the string "never" if it has never been cleared
 
 ## Health Checks
-This module is compatible with AdonisJS's built-in health checks.  Below is an example output of health check info for a user cache.
+This module is compatible with AdonisJS's built-in health checks.  While you can create caches at any time during the lifespan of the AdonisJS service, we recommend creating them up front in your application's provider, usually during the boot process.  See the example below.
+
+```typescript
+export default class AppProvider {
+  // ...
+  public async boot() {
+    // ...
+    const HealthCheck = this.app.container.use('Adonis/Core/HealthCheck')
+    const userCache = CacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
+    const userChecker = userCache.getHealthChecker(true, 'yyyy-LL-dd HH:mm:ss ZZZZ')
+    HealthCheck.addChecker('userCache', userChecker)
+    // ...
+  }
+  // ...
+}
+```
+
+Below is an example output of health check info for a user cache.  It is not recommended to configure the cache to include items if the cache size is large, as the health check data could become quite large.
 
 ```json
 "userCache": {
@@ -92,6 +109,7 @@ This module is compatible with AdonisJS's built-in health checks.  Below is an e
           "age": 15989,
           "ageDesc": "15989 ms (0.27 min)"
         }
+      }
     ]
   }
 }
