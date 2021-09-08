@@ -28,7 +28,7 @@ CacheManager.createLRUCache<User>('my-cache', 50, 'memory', 'My Example Cache')
 const userCache = CacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
 ```
 
-#### createLRUCache
+#### CacheManager.createLRUCache
 Creates an LRU cache.
 
 Parameters
@@ -38,7 +38,7 @@ Parameters
 * displayName - human friendly name used in health checks.  Optional.
 * connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
 
-#### createTLRUCache
+#### CacheManager.createTLRUCache
 Creates a timed LRU (TLRU) cache.
 
 Parameters
