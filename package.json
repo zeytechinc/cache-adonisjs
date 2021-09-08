@@ -1,10 +1,10 @@
 {
-  "name": "@skrenek/cache-adonisjs",
+  "name": "@zeytech/cache-adonisjs",
   "version": "1.0.13",
   "description": "Provides LRU and Timed LRU in-memory cache with support for Adonis",
   "main": "build/providers/CacheProvider.js",
   "repository": {
-    "url": "git://github.com/skrenek/cache-adonisjs.git"
+    "url": "git://github.com/zeytechinc/cache-adonisjs.git"
   },
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
@@ -19,10 +19,13 @@
     "commit": "git-cz",
     "release": "np",
     "version": "npm run build",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json skrenek/cache-adonisjs",
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json zeytech/cache-adonisjs",
     "copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build"
   },
-  "author": "Steve Krenek",
+  "author": "Zeytech Inc (https://zeytech.com)",
+  "contributors": [
+    "Steve Krenek (https://github.com/skrenek"
+  ],
   "license": "MIT",
   "typings": "./build/adonis-typings/index.d.ts",
   "devDependencies": {
@@ -75,12 +78,9 @@
     "build/standalone.d.ts"
   ],
   "adonisjs": {
-    "types": "@skrenek/cache-adonisjs",
+    "types": "@zeytech/cache-adonisjs",
     "providers": [
-      "@skrenek/cache-adonisjs"
+      "@zeytech/cache-adonisjs"
     ]
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   }
 }
