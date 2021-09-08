@@ -19,7 +19,7 @@ This package provides LRU and TLRU caches for use inside AdonisJS using either a
 `import CacheManager from 'Adonis/Addons/Zeytech/Cache/CacheManager'`
 
 ### Creating a Cache
-```
+```typescript
 // Create a simple in-memory LRU cache with a max size of 50 items.
 CacheManager.createLRUCache<User>('my-cache', 50, 'memory', 'My Example Cache')
 
@@ -43,13 +43,13 @@ If you so choose, you can reinitialize a cache to expand or shrink its max size.
 `cache.initialize(100)`
 
 #### Get / Set Items
-```
+```typescript
 await cache.set('some-key', { some: 'object' })
 const myObj = await cache.get('some-key')
 ```
 
 #### Deleting Items
-```
+```typescript
 // Delete a single key
 const result = await cache.delete('some-key')
 
@@ -65,7 +65,7 @@ await cache.clear()
 ## Health Checks
 This module is compatible with AdonisJS's built-in health checks.  Below is an example output of health check info for a user cache.
 
-```
+```json
 "userCache": {
   "displayName": "User Cache",
   "health": {
