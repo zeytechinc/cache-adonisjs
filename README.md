@@ -28,6 +28,27 @@ CacheManager.createLRUCache<User>('my-cache', 50, 'memory', 'My Example Cache')
 const userCache = CacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
 ```
 
+#### createLRUCache
+Creates an LRU cache.
+
+Parameters
+* key - the key used to retrieve the cache later
+* maxItems - the max number of items the cache will store before it starts purging least recently used items.  If 0, no purging occurs.
+* storage - 'memory' or 'redis'.  The caching engine to use.  The Redis storage engine uses Adonis's built-in Redis support.
+* displayName - human friendly name used in health checks.  Optional.
+* connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
+
+#### createTLRUCache
+Creates a timed LRU (TLRU) cache.
+
+Parameters
+* key - the key used to retrieve the cache later
+* maxItems - the max number of items the cache will store before it starts purging least recently used items.  If 0, no purging occurs.
+* maxItemAge - the max age of an item in the cache before it expires, in milliseconds.
+* storage - 'memory' or 'redis'.  The caching engine to use.  The Redis storage engine uses Adonis's built-in Redis support.
+* displayName - human friendly name used in health checks.  Optional.
+* connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
+
 ### Retrieve a previously created cache from the manager
 `const cache = CacheManager.getLRUCache('my-cache')`
 
