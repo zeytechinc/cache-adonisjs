@@ -24,7 +24,7 @@
   },
   "author": "Zeytech Inc (https://zeytech.com)",
   "contributors": [
-    "Steve Krenek (https://github.com/skrenek"
+    "Steve Krenek (https://github.com/skrenek)"
   ],
   "license": "MIT",
   "typings": "./build/adonis-typings/index.d.ts",

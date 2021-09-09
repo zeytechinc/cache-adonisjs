@@ -1,3 +1,13 @@
+/*
+ * File: CacheManager.ts
+ * Created Date: Aug 31, 2021
+ * Copyright (c) 2021 Zeytech Inc. (https://zeytech.com)
+ * Author: Steve Krenek (https://github.com/skrenek)
+ * -----
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { RedisManagerContract } from '@ioc:Adonis/Addons/Redis'
 import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
 import { LRUCache } from './LRUCache'
