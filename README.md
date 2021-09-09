@@ -136,10 +136,10 @@ Below is an example output of health check info for a user cache.  It is not rec
 }
 ```
 
-[npm-image]: https://img.shields.io/npm/v/cache-adonisjs.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/cache-adonisjs "npm"
+[npm-image]: https://img.shields.io/npm/v/@zeytech/cache-adonisjs.svg?style=for-the-badge&logo=npm
+[npm-url]: https://npmjs.org/package/@zeytech/cache-adonisjs "npm"
 
-[license-image]: https://img.shields.io/npm/l/cache-adonisjs?color=326D88&style=for-the-badge
+[license-image]: https://img.shields.io/npm/l/@zeytech/cache-adonisjs?color=326D88&style=for-the-badge
 [license-url]: License.md "license"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-326D88.svg?style=for-the-badge&logo=typescript
