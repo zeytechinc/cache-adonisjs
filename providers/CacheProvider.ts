@@ -25,14 +25,14 @@ export default class CacheProvider {
       const CacheItem = require('../src/Cache/CacheItem')
       return CacheItem
     })
-  }
 
-  public boot() {
     this.app.container.singleton('Adonis/Addons/Zeytech/Cache/CacheManager', () => {
       const redis = this.app.container.use('Adonis/Addons/Redis')
       return new CacheManager(redis)
     })
   }
+
+  public boot() {}
 
   public async shutdown() {
     await this.app.container.resolveBinding('Adonis/Addons/Zeytech/Cache/CacheManager').shutdown()
