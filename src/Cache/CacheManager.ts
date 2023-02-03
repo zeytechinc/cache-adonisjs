@@ -18,7 +18,7 @@ import { CacheEngineContract, CacheEngineType } from '@ioc:Adonis/Addons/Zeytech
 import MemoryCacheEngine from './MemoryCacheEngine'
 
 export default class CacheManager {
-  constructor(protected _redisManager: RedisManagerContract) {
+  constructor(protected _redisManager?: RedisManagerContract) {
     this.caches = new Map()
   }
 
@@ -33,6 +33,9 @@ export default class CacheManager {
     let engine: CacheEngineContract<T>
     if (storage === 'redis') {
       const redis = new RedisCacheEngine<T>(displayName, maxItemAge)
+      if (!this._redisManager) {
+        throw new Error('redis storage engine chosen but no redis manager provided')
+      }
       redis.redisConnection = connectionName
         ? this._redisManager.connection(connectionName)
         : this._redisManager.connection()

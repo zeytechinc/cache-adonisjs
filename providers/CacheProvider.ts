@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 
+import { RedisManagerContract } from '@ioc:Adonis/Addons/Redis'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import CacheManager from '../src/Cache/CacheManager'
 
@@ -16,6 +17,7 @@ export default class CacheProvider {
   public static needsApplication = true
 
   public register() {
+    const Logger = this.app.container.resolveBinding('Adonis/Core/Logger')
     this.app.container.bind('Adonis/Addons/Zeytech/Cache/HealthCheckHelper', () => {
       const { HealthCheckHelper } = require('../src/Helpers/HealthCheckHelper')
       return HealthCheckHelper
@@ -27,8 +29,15 @@ export default class CacheProvider {
     })
 
     this.app.container.singleton('Adonis/Addons/Zeytech/Cache/CacheManager', () => {
-      const redis = this.app.container.use('Adonis/Addons/Redis')
-      return new CacheManager(redis)
+      let redisManager: RedisManagerContract | undefined
+      try {
+        redisManager = this.app.container.use('Adonis/Addons/Redis')
+      } catch (err) {
+        Logger.warn(
+          'Zeytech-CacheManager: No redis manager found during initialization.  Creating redis caches will throw an exception.'
+        )
+      }
+      return new CacheManager(redisManager)
     })
   }
 
