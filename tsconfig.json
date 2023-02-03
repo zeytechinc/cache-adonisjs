@@ -6,5 +6,9 @@
       "@adonisjs/core",
       "@adonisjs/redis"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "build"
+]
 }

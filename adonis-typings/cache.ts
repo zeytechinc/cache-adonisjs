@@ -71,3 +71,10 @@ declare module '@ioc:Adonis/Addons/Zeytech/Cache' {
   export const CacheItem: CacheItemContract<any>
   export const HealthCheckHelper: HealthCheckContract
 }
+
+declare module '@ioc:Adonis/Addons/Zeytech/Cache/CacheManager' {
+  import { CacheManagerContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
+
+  export const CacheManager: CacheManagerContract
+  export default CacheManager
+}
