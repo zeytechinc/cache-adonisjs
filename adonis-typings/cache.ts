@@ -7,12 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-import { HealthCheckContract } from '@ioc:Adonis/Core/HealthCheck'
-
 declare module '@ioc:Adonis/Addons/Zeytech/Cache' {
   import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
   import { TLRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache'
+  import { HealthCheckContract } from '@ioc:Adonis/Core/HealthCheck'
+
   export interface LastAccessInfoContract {
     utc: string
     age: number
