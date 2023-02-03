@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 
+import { HealthCheckContract } from '@ioc:Adonis/Core/HealthCheck'
+
 declare module '@ioc:Adonis/Addons/Zeytech/Cache' {
   import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
   import { TLRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache'
@@ -65,4 +67,8 @@ declare module '@ioc:Adonis/Addons/Zeytech/Cache' {
 
     shutdown(): Promise<void>
   }
+
+  export const CacheManager: CacheManagerContract
+  export const CacheItem: CacheItemContract<any>
+  export const HealthCheckHelper: HealthCheckContract
 }
