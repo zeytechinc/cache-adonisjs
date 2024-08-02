@@ -63,10 +63,13 @@
     "@adonisjs/core": "^6.2.0"
   },
   "author": "Zeytech Inc (https://zeytech.com)",
+  "license": "MIT",
+  "repository": {
+    "url": "git://github.com/zeytechinc/cache-adonisjs.git"
+  },
   "constributors": [
     "Steve Krenek (https://github.com/skrenek)"
   ],
-  "license": "MIT",
   "keywords": [
     "zeytech",
     "adonisjs",
