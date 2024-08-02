@@ -1,19 +1,18 @@
 /*
- * File: CacheItem.ts
- * Created Date: May 20, 2021
- * Copyright (c) 2021 Zeytech Inc. (https://zeytech.com)
+ * File: cache.ts
+ * Created Date: Aug 02, 2024
+ * Copyright (c) 2024 Zeytech Inc. (https://zeytech.com)
  * Author: Steve Krenek (https://github.com/skrenek)
  * -----
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+export type CacheEngineType = 'memory' | 'redis'
 
-import { CacheItemContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
-
-class CacheItem<T> implements CacheItemContract<T> {
-  public data: T
-  public timestamp: number
-  public lastAccess: number
+export class CacheItem<T> {
+  data: T
+  timestamp: number
+  lastAccess: number
 
   constructor(data: T) {
     this.data = data
@@ -21,11 +20,14 @@ class CacheItem<T> implements CacheItemContract<T> {
     this.lastAccess = this.timestamp
   }
 
-  public serialize() {
+  serialize(pretty?: boolean) {
+    if (pretty) {
+      return JSON.stringify(this, null, 2)
+    }
     return JSON.stringify(this)
   }
 
-  public static parse<U>(data: string): CacheItem<U> {
+  static parse<U>(data: string): CacheItem<U> {
     const temp = JSON.parse(data)
     const item = new CacheItem(temp.data)
     item.timestamp = temp.timestamp
@@ -33,5 +35,3 @@ class CacheItem<T> implements CacheItemContract<T> {
     return item
   }
 }
-
-export default CacheItem

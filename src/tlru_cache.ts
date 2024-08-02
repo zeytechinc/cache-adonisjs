@@ -1,20 +1,16 @@
 /*
- * File: TLRUCache.ts
- * Created Date: Apr 08, 2021
- * Copyright (c) 2021 Zeytech Inc. (https://zeytech.com)
+ * File: tlru_cache.ts
+ * Created Date: Aug 02, 2024
+ * Copyright (c) 2024 Zeytech Inc. (https://zeytech.com)
  * Author: Steve Krenek (https://github.com/skrenek)
  * -----
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 import { Duration } from 'luxon'
-import {
-  TLRUCacheContract,
-  TLRUCacheHealthCheckContract,
-} from '@ioc:Adonis/Addons/Zeytech/Cache/TLRUCache'
-import { LRUCache } from './LRUCache'
-import { CacheEngineContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
+import { CacheEngine } from './engines/index.js'
+import { LRUCache } from './lru_cache.js'
+import { TLRUHealthCheckMetadata, TLRUHealthCheckMetadataItem } from './types.js'
 
 /**
  * This implements a Timed Least Recently Used cache.  See https://en.wikipedia.org/wiki/Cache_replacement_policies#Time_aware_least_recently_used_(TLRU)
@@ -25,7 +21,7 @@ import { CacheEngineContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
  * Note that this implementation has NO mechanism for automatically pruning expired items.  They are simply pruned
  * on the first expired access attempt.
  */
-export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
+export class TLRUCache<T> extends LRUCache<T> {
   private maxItemAge: number
 
   /**
@@ -33,7 +29,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
    * @param maxItemAge max age of cached items in ms before they are purged.
    */
   constructor(
-    storage: CacheEngineContract<T>,
+    storage: CacheEngine<T>,
     maxItems: number = 0,
     maxItemAge: number = 0,
     displayName?: string
@@ -48,12 +44,12 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
    * @param maxItems max items
    * @param maxItemAge, max age in ms, 0 for infinite
    */
-  public async initialize(maxItems: number, maxItemAge: number = 0) {
+  async initialize(maxItems: number, maxItemAge: number = 0) {
     await super.initialize(maxItems)
     this.maxItemAge = maxItemAge
   }
 
-  public async get(key: string): Promise<T | undefined> {
+  async get(key: string): Promise<T | undefined> {
     const item = await this.storageEngine.get(key)
     if (item) {
       if (new Date().getTime() < item.timestamp + this.maxItemAge) {
@@ -64,27 +60,27 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
     }
   }
 
-  public async getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object> {
+  async getHealthCheckMeta(dateFormat?: string): Promise<object> {
     const size = await this.getSize()
-    const meta = {
+    const meta: TLRUHealthCheckMetadata = {
       size: size,
       maxSize: this.maxSize,
       maxAge: this.maxItemAge,
       maxAgeDesc: `${this.maxItemAge} ms (${Duration.fromMillis(this.maxItemAge)
         .as('minutes')
         .toFixed(2)} min)`,
-      purge_count: this._purged,
-      last_cleared: this._lastCleared,
-      items: [] as TLRUCacheHealthCheckContract[],
+      purgeCount: this._purged,
+      lastCleared: this._lastCleared,
+      items: [],
     }
-    if (includeItems) {
+    if (this.healthCheckItemsEnabled) {
       meta.items = await this.getHealthInfo(dateFormat)
     }
     return meta
   }
 
-  protected async getHealthInfo(dateFormat?: string): Promise<TLRUCacheHealthCheckContract[]> {
-    let info: TLRUCacheHealthCheckContract[] = []
+  protected async getHealthInfo(dateFormat?: string): Promise<TLRUHealthCheckMetadataItem[]> {
+    let info: TLRUHealthCheckMetadataItem[] = []
     let now = new Date().getTime()
     const maxItemAgeMs = this.maxItemAge
     const keys = await this.storageEngine.getKeys()
@@ -106,7 +102,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
               ? `${ttl} ms (${Duration.fromMillis(ttl).as('minutes').toFixed(2)} min)`
               : 'Never expires',
           expired: now - item.timestamp > maxItemAgeMs,
-          lastAccess: accessInfo!.lastAccessed,
+          lastAccessed: accessInfo!.lastAccessed,
         })
       } else {
         info.push({
@@ -116,7 +112,7 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
           ttl: 0,
           ttlDesc: '',
           expired: true,
-          lastAccess: {
+          lastAccessed: {
             age: 0,
             ageDesc: '',
             utc: '',
@@ -130,7 +126,11 @@ export class TLRUCache<T> extends LRUCache<T> implements TLRUCacheContract<T> {
   /**
    * The max age of items in the cache in seconds.
    */
-  public get maxAge(): number {
+  get maxAge(): number {
     return this.maxItemAge
+  }
+
+  get isTimed(): boolean {
+    return true
   }
 }

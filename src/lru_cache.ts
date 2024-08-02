@@ -1,35 +1,33 @@
 /*
- * File: LRUCache.ts
- * Created Date: Apr 08, 2021
- * Copyright (c) 2021 Zeytech Inc. (https://zeytech.com)
+ * File: lru_cache.ts
+ * Created Date: Aug 02, 2024
+ * Copyright (c) 2024 Zeytech Inc. (https://zeytech.com)
  * Author: Steve Krenek (https://github.com/skrenek)
  * -----
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-import { Checker } from '@ioc:Adonis/Core/HealthCheck'
-import { LRUCacheContract } from '@ioc:Adonis/Addons/Zeytech/Cache/LRUCache'
-import { HealthCheckHelper } from '../Helpers/HealthCheckHelper'
-import CacheItem from './CacheItem'
-import cuid from 'cuid'
-import { CacheEngineContract } from '@ioc:Adonis/Addons/Zeytech/Cache'
+import { CacheItem } from './cache.js'
+import { CacheEngine } from './engines/index.js'
+import { HealthCheckHelper } from './health_check.js'
 
 /**
  * This class implements a least recently used in-memory cache specifically tailored toward use in AdonisJS.  While
  * it can be used outside of it, it provides health check mechanisms that can be used by the framework to inspect
  * the state of the cache at runtime.
  */
-export class LRUCache<T> implements LRUCacheContract<T> {
+export class LRUCache<T> {
   protected maxItems: number = 0
   protected _purged: number = 0
   protected _lastCleared: string = 'never'
-  protected displayName: string
-  protected storageEngine: CacheEngineContract<T>
+  protected _displayName: string
+  protected storageEngine: CacheEngine<T>
+  healthCheckEnabled = true
+  healthCheckItemsEnabled = true
 
-  constructor(storage: CacheEngineContract<T>, maxItems: number = 0, displayName?: string) {
+  constructor(storage: CacheEngine<T>, maxItems: number = 0, displayName?: string) {
     this.maxItems = maxItems
-    this.displayName = displayName || cuid()
+    this._displayName = displayName || `cache_${Date.now()}`
     this.storageEngine = storage
   }
 
@@ -38,17 +36,17 @@ export class LRUCache<T> implements LRUCacheContract<T> {
    * When re-initializing, the oldest items will be pruned until the new max size is reached.
    * @param maxItems the max number of items to cache before purging old items.
    */
-  public async initialize(maxItems: number) {
+  async initialize(maxItems: number) {
     this.maxItems = maxItems
     await this.storageEngine.prune(maxItems)
   }
 
-  public async set(key: string, data: T | CacheItem<T>) {
+  async set(key: string, data: T | CacheItem<T>) {
     this.storageEngine.set(key, data)
     await this.storageEngine.prune(this.maxItems)
   }
 
-  public async get(key: string): Promise<T | undefined> {
+  async get(key: string): Promise<T | undefined> {
     const item = await this.storageEngine.get(key)
     if (item) {
       item.lastAccess = new Date().getTime()
@@ -56,7 +54,7 @@ export class LRUCache<T> implements LRUCacheContract<T> {
     return item?.data
   }
 
-  public async delete(key: string): Promise<boolean> {
+  async delete(key: string): Promise<boolean> {
     const deleted = await this.storageEngine.delete(key)
     if (deleted) {
       this._purged += 1
@@ -64,43 +62,43 @@ export class LRUCache<T> implements LRUCacheContract<T> {
     return deleted
   }
 
-  public async clear() {
+  async clear() {
     await this.storageEngine.clear()
     this._purged = 0
     this._lastCleared = new Date().toISOString() // utc
   }
 
-  public async getSize(): Promise<number> {
+  async getSize(): Promise<number> {
     return await this.storageEngine.getSize()
   }
 
-  public get maxSize(): number {
+  get maxSize(): number {
     return this.maxItems
   }
 
-  public get purged(): number {
+  get purged(): number {
     return this._purged
   }
 
-  public get lastCleared(): string {
+  get lastCleared(): string {
     return this._lastCleared
   }
 
-  public async getHealthCheckMessage(): Promise<string> {
+  async getHealthCheckMessage(): Promise<string> {
     const size = await this.getSize()
     return `Size ${size} of ${this.maxItems}`
   }
 
-  public async getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object> {
+  async getHealthCheckMeta(dateFormat?: string): Promise<object> {
     const size = await this.getSize()
     const meta: any = {
       size: size,
       maxSize: this.maxItems,
-      purge_count: this._purged,
-      last_cleared: this._lastCleared,
+      purgeCount: this._purged,
+      lastCleared: this._lastCleared,
     }
 
-    if (includeItems) {
+    if (this.healthCheckItemsEnabled) {
       const items: any = []
       const keys = await this.storageEngine.getKeys()
       for (const key of keys) {
@@ -128,21 +126,15 @@ export class LRUCache<T> implements LRUCacheContract<T> {
     }
   }
 
-  public async getHealthChecker(includeItems?: boolean, dateFormat?: string): Promise<Checker> {
-    return async () => {
-      const size = await this.getSize()
-      return {
-        displayName: this.displayName,
-        health: {
-          healthy: this.maxSize === 0 ? true : size < this.maxSize,
-          message: await this.getHealthCheckMessage(),
-        },
-        meta: await this.getHealthCheckMeta(includeItems, dateFormat),
-      }
-    }
+  getStorageEngine(): CacheEngine<T> {
+    return this.storageEngine
   }
 
-  public getStorageEngine(): CacheEngineContract<T> {
-    return this.storageEngine
+  get isTimed(): boolean {
+    return false
+  }
+
+  get displayName(): string {
+    return this.displayName
   }
 }
