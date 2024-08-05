@@ -12,8 +12,9 @@ import { CacheEngineType } from './cache.js'
 import { CacheEngine, MemoryCacheEngine, RedisCacheEngine } from './engines/index.js'
 import { LRUCache } from './lru_cache.js'
 import { TLRUCache } from './tlru_cache.js'
+import { CacheManagerContract } from './types.js'
 
-export class CacheManager {
+export class CacheManager implements CacheManagerContract {
   #caches: Map<string, LRUCache<any> | TLRUCache<any>>
 
   constructor() {
