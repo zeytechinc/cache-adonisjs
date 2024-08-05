@@ -61,6 +61,8 @@ export class CacheHealthCheck extends BaseCheck {
         })
       }
     }
-    return Result.ok(`${meta.length} caches reporting statistics`).mergeMetaData(meta)
+    return Result.ok(
+      `${meta.length} of ${cacheKeys.length} caches reporting statistics`
+    ).setMetaData(meta)
   }
 }

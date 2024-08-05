@@ -135,6 +135,6 @@ export class LRUCache<T> {
   }
 
   get displayName(): string {
-    return this.displayName
+    return this._displayName
   }
 }

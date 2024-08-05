@@ -43,7 +43,7 @@ Parameters
 * connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
 
 #### CacheManager.createTLRUCache
-Creates a timed LRU (TLRU) cache.
+Creates a timed LRU (TLRU) cache.  Note that the timeout is a max possible time a cached item can live, not since its last access.
 
 Parameters
 * key - the key used to retrieve the cache later
@@ -129,7 +129,7 @@ export default class AppProvider {
 Below is an example output of health check metadata info for a user cache.  It is not recommended to configure the cache to include items if the cache size is large, as the health check data could become quite large.
 
 ```json
-"userCache": {
+{
   "displayName": "User Cache",
   "message": "Size 1 of 50",
   "meta": {

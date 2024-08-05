@@ -5,9 +5,14 @@
   "engines": {
     "node": ">=20.6.0"
   },
+  "main": "build/index.js",
   "type": "module",
   "files": [
-    "build/src",
+    "!build/bin",
+    "!build/tests",
+    "build/configure.js",
+    "build/configure.d.ts",
+    "build/src/**/*",
     "build/providers",
     "build/stubs",
     "build/index.d.ts",
@@ -33,7 +38,8 @@
     "postbuild": "npm run copy:templates",
     "release": "np",
     "version": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish:local": "del pkg-local/*.tgz && npm run build && npm pack --pack-destination ./pkg-local"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.7.0",
@@ -56,11 +62,11 @@
     "typescript": "~5.4.5"
   },
   "dependencies": {
-    "@adonisjs/redis": "^9.1.0",
     "luxon": "^3.4.4"
   },
   "peerDependencies": {
-    "@adonisjs/core": "^6.2.0"
+    "@adonisjs/core": "^6.2.0",
+    "@adonisjs/redis": "^9.1.0"
   },
   "author": "Zeytech Inc (https://zeytech.com)",
   "license": "MIT",
