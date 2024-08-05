@@ -1,11 +1,10 @@
-# cache-adonisjs
+# @zeytech/cache-adonisjs
 
 [![npm](https://img.shields.io/npm/v/@zeytech/cache-adonisjs.svg)](https://www.npmjs.com/package/@zeytech/cache-adonisjs)
 
-
 [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
 
-This package provides LRU and TLRU caches for use inside AdonisJS using either an in-memory or Redis storage engine.  It also provides built-in AdonisJS health checks.
+This package provides LRU and TLRU caches for use inside AdonisJS using either an in-memory or Redis storage engine.  It also provides an AdonisJS health check to measure statistics about the cache(s).
 
 ## Installation
 
@@ -16,16 +15,21 @@ This package provides LRU and TLRU caches for use inside AdonisJS using either a
 ## Usage
 
 ### Importing
-`import CacheManager from 'Adonis/Addons/Zeytech/Cache/CacheManager'`
+`import cacheManager from '@zeytech/cache-adonisjs/services/main'`
 
 ### Creating a Cache
 ```typescript
+import cacheManager from '@zeytech/cache-adonisjs/services/main'
+
 // Create a simple in-memory LRU cache with a max size of 50 items.
-CacheManager.createLRUCache<User>('my-cache', 50, 'memory', 'My Example Cache')
+cacheManager.createLRUCache<User>('my-cache', 50, 'memory', 'My Example Cache')
 
 // Create a timed LRU cache backed by Redis storage.  Items time out after 15 minutes (900 sec.)
 // It will use the "user_cache" connection name in the app's Redis config.
-const userCache = CacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
+const userCache = cacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
+
+// Similar to above, but use the default redis connection (omit param)
+const roleCache = cacheManager.createTLRUCache<Role>('roles', 50, 900)
 ```
 
 #### CacheManager.createLRUCache
@@ -39,7 +43,7 @@ Parameters
 * connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
 
 #### CacheManager.createTLRUCache
-Creates a timed LRU (TLRU) cache.
+Creates a timed LRU (TLRU) cache.  Note that the timeout is a max possible time a cached item can live, not since its last access.
 
 Parameters
 * key - the key used to retrieve the cache later
@@ -49,11 +53,13 @@ Parameters
 * displayName - human friendly name used in health checks.  Optional.
 * connectionName - Ignored if storage is not 'redis'.  The configured Redis connection name to utilize for the cache.
 
+> Note that the memory cache engine does not automatically remove items from the cache when they expire.  Instead, they are purged when an expired key is requested.  The redis engine does indeed utilize `setex` to automatically purge data when it expires.
+
 ### Retrieve a previously created cache from the manager
-`const cache = CacheManager.getLRUCache('my-cache')`
+`const cache = cacheManager.getLRUCache('my-cache')`
 
 ### Remove (destroy) a cache from the manager
-`const success = CacheManager.removeCache('my-cache')`
+`const success = cacheManager.removeCache('my-cache')`
 
 ### Working with Caches
 Once you have a cache instance available to you, you can work with cached items in it as follows.  Most functions are asynchronous in nature due to some storage engines requiring it.
@@ -84,39 +90,55 @@ await cache.clear()
 * lastCleared - ISO 8601 timestamp of when the cache was last cleared or the string "never" if it has never been cleared
 
 ## Health Checks
-This module is compatible with AdonisJS's built-in health checks.  While you can create caches at any time during the lifespan of the AdonisJS service, we recommend creating them up front in your application's provider, usually during the boot process.  See the example below.
+This module is compatible with AdonisJS's built-in health checks.  To utilize health checks you'll have to register the health check class as explained in [Registering custom health checks](https://docs.adonisjs.com/guides/digging-deeper/health-checks#registering-custom-health-check).  An example is shown below.
+
+In `start/health.ts`
+```typescript
+import { CacheHealthCheck } from '@zeytech/cache-adonisjs'
+
+export const healthChecks = new HealthChecks().register([
+  new CacheHealthCheck()
+])
+```
+
+By default, all caches and their items are included in the metadata of the health check.  To omit a cache from the health checks, set its `healthCheckEnabled` property to false.  Likewise, if you want basic info about the cache in the health check but do not want details on the items, set the cache's `healthCheckItemsEnabled` property to false.
+
+---
+One last note.  While you can create caches at any time during the lifespan of the AdonisJS app, we recommend creating them up front in your application's provider, usually during the boot process.  See the example below.
 
 ```typescript
 export default class AppProvider {
   // ...
   public async boot() {
     // ...
-    const HealthCheck = this.app.container.use('Adonis/Core/HealthCheck')
-    const userCache = CacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
-    const userChecker = userCache.getHealthChecker(true, 'yyyy-LL-dd HH:mm:ss ZZZZ')
-    HealthCheck.addChecker('userCache', userChecker)
+    const userCache = cacheManager.createTLRUCache<User>('users', 50, 900, 'redis', 'User Cache', 'user_cache')
+
+    // Example of omitting cache items from any registered health checks
+    userCache.healthCheckItemsEnabled = false
+
+    const roleCache = cacheManager.createLRUCache<Role>('roles', 50)
+    // Example of turning off health check entirely.
+    roleCache.healthCheckEnabled = false
+
     // ...
   }
   // ...
 }
 ```
 
-Below is an example output of health check info for a user cache.  It is not recommended to configure the cache to include items if the cache size is large, as the health check data could become quite large.
+Below is an example output of health check metadata info for a user cache.  It is not recommended to configure the cache to include items if the cache size is large, as the health check data could become quite large.
 
 ```json
-"userCache": {
+{
   "displayName": "User Cache",
-  "health": {
-    "healthy": true,
-    "message": "Size 1 of 50"
-  },
+  "message": "Size 1 of 50",
   "meta": {
     "size": 1,
     "maxSize": 50,
     "maxAge": 30000,
     "maxAgeDesc": "30000 ms (0.50 min)",
-    "purge_count": 0,
-    "last_cleared": "never",
+    "purgeCount": 0,
+    "lastCleared": "never",
     "items": [
       {
         "key": "user_cache_some_user_id",

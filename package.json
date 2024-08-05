@@ -1,90 +1,107 @@
 {
   "name": "@zeytech/cache-adonisjs",
-  "version": "1.0.18",
-  "description": "Provides LRU and Timed LRU in-memory cache with support for Adonis",
-  "main": "build/providers/CacheProvider.js",
+  "description": "Provides LRU and Timed LRU in-memory cache with support for Adonis 6+",
+  "version": "2.0.0",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "main": "build/index.js",
+  "type": "module",
+  "files": [
+    "!build/bin",
+    "!build/tests",
+    "build/configure.js",
+    "build/configure.d.ts",
+    "build/src/**/*",
+    "build/providers",
+    "build/stubs",
+    "build/index.d.ts",
+    "build/index.js"
+  ],
+  "exports": {
+    ".": "./build/index.js",
+    "./types": "./build/src/types.js",
+    "./services/main": "./build/services/main.js",
+    "./cache_provider": "./build/providers/cache_provider.js"
+  },
+  "scripts": {
+    "clean": "del-cli build",
+    "copy:templates": "copyfiles \"stubs/**/*.stub\" build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext=.ts",
+    "format": "prettier --write .",
+    "quick:test": "node --import=./tsnode.esm.js --enable-source-maps bin/test.ts",
+    "pretest": "npm run lint",
+    "test": "c8 npm run quick:test",
+    "prebuild": "npm run lint && npm run clean",
+    "build": "tsc",
+    "postbuild": "npm run copy:templates",
+    "release": "np",
+    "version": "npm run build",
+    "prepublishOnly": "npm run build",
+    "publish:local": "del pkg-local/*.tgz && npm run build && npm pack --pack-destination ./pkg-local"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^7.7.0",
+    "@adonisjs/core": "^6.12.0",
+    "@adonisjs/eslint-config": "^1.3.0",
+    "@adonisjs/prettier-config": "^1.3.0",
+    "@adonisjs/tsconfig": "^1.3.0",
+    "@japa/assert": "^3.0.0",
+    "@japa/runner": "^3.1.4",
+    "@swc/core": "^1.6.3",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.14.5",
+    "c8": "^10.1.2",
+    "copyfiles": "^2.4.1",
+    "del-cli": "^5.1.0",
+    "eslint": "^8.57.0",
+    "np": "^10.0.6",
+    "prettier": "^3.3.2",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.4.5"
+  },
+  "dependencies": {
+    "luxon": "^3.4.4"
+  },
+  "peerDependencies": {
+    "@adonisjs/core": "^6.2.0",
+    "@adonisjs/redis": "^9.1.0"
+  },
+  "author": "Zeytech Inc (https://zeytech.com)",
+  "license": "MIT",
   "repository": {
     "url": "git://github.com/zeytechinc/cache-adonisjs.git"
   },
+  "constributors": [
+    "Steve Krenek (https://github.com/skrenek)"
+  ],
   "keywords": [
+    "zeytech",
     "adonisjs",
     "cache"
   ],
-  "scripts": {
-    "mrm": "mrm --preset=@adonisjs/mrm-preset",
-    "pretest": "npm run lint",
-    "test": "node japaFile.js",
-    "clean": "del build",
-    "compile": "npm run lint && npm run clean && tsc && npm run copyfiles",
-    "build": "npm run compile",
-    "prepublishOnly": "npm run build",
-    "lint": "eslint . --ext=.ts",
-    "format": "prettier --write .",
-    "commit": "git-cz",
-    "release": "np",
-    "version": "npm run build",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json zeytech/cache-adonisjs",
-    "copyfiles": "copyfiles \"templates/**/*.txt\" \"instructions.md\" build"
+  "eslintConfig": {
+    "extends": "@adonisjs/eslint-config/package"
   },
-  "author": "Zeytech Inc (https://zeytech.com)",
-  "contributors": [
-    "Steve Krenek (https://github.com/skrenek)"
-  ],
-  "license": "MIT",
-  "typings": "./build/adonis-typings/index.d.ts",
-  "devDependencies": {
-    "@adonisjs/core": "^5.1.4",
-    "@adonisjs/mrm-preset": "^5.0.3",
-    "@adonisjs/redis": "^7.0.8",
-    "@adonisjs/require-ts": "^2.0.3",
-    "@adonisjs/sink": "^5.1.2",
-    "@types/node": "^18.11.18",
-    "commitizen": "^4.2.3",
-    "copyfiles": "^2.4.1",
-    "cz-conventional-changelog": "^3.3.0",
-    "del-cli": "^5.0.0",
-    "doctoc": "^2.0.0",
-    "eslint": "^8.33.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-adonis": "^2.1.1",
-    "eslint-plugin-prettier": "^4.2.1",
-    "github-label-sync": "^2.0.0",
-    "husky": "^6.0.0",
-    "japa": "^4.0.0",
-    "luxon": "^3.2.1",
-    "mrm": "^4.1.13",
-    "np": "^7.4.0",
-    "prettier": "^2.2.1",
-    "typescript": "^4.2.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md",
-      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
-    }
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
+  "prettier": "@adonisjs/prettier-config",
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
   },
   "np": {
-    "contents": ".",
+    "message": "chore(release): %s",
+    "tag": "latest",
+    "branch": "main",
     "anyBranch": false
   },
-  "files": [
-    "build/adonis-typings",
-    "build/providers",
-    "build/src",
-    "build/templates",
-    "build/instructions.*",
-    "build/standalone.js",
-    "build/standalone.d.ts"
-  ],
-  "adonisjs": {
-    "types": "@zeytech/cache-adonisjs",
-    "providers": [
-      "@zeytech/cache-adonisjs"
+  "c8": {
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "tests/**"
     ]
   }
 }
