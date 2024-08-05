@@ -1,4 +1,6 @@
-import { CacheItem } from './cache.js'
+import { CacheEngineType, CacheItem } from './cache.js'
+import { LRUCache } from './lru_cache.js'
+import { TLRUCache } from './tlru_cache.js'
 
 export interface BaseHealthCheckMetadata {
   size: number
@@ -48,4 +50,26 @@ export interface BaseCache<T> {
   readonly lastCleared: string
   getHealthCheckMessage(): Promise<string>
   getHealthCheckMeta(includeItems?: boolean, dateFormat?: string): Promise<object>
+}
+export interface CacheManagerContract {
+  createLRUCache<T>(
+    key: string,
+    maxItems: number,
+    storage: CacheEngineType,
+    displayName?: string,
+    connectionName?: string
+  ): LRUCache<T>
+  createTLRUCache<T>(
+    key: string,
+    maxItems: number,
+    maxItemAge: number,
+    storage: CacheEngineType,
+    displayName?: string,
+    connectionName?: string
+  ): TLRUCache<T>
+  getLRUCache<T>(key: string): LRUCache<T> | undefined
+  getTLRUCache<T>(key: string): TLRUCache<T> | undefined
+  getKeys(): string[]
+  removeCache(key: string): Promise<boolean>
+  shutdown(): Promise<void>
 }
